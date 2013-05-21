@@ -114,7 +114,7 @@ class Autoloader
 
 		if (isset(static::$classes[$class]))
 		{
-			include str_replace('/', DS, static::$classes[$class]);
+			include str_replace('/', DIRECTORY_SEPARATOR, static::$classes[$class]);
 			static::init_class($class);
 			$loaded = true;
 		}
@@ -189,9 +189,9 @@ class Autoloader
 		{
 			$namespace = substr($class, 0, $last_ns_pos);
 			$class = substr($class, $last_ns_pos + 1);
-			$file = str_replace('\\', DS, $namespace).DS;
+			$file = str_replace('\\', DIRECTORY_SEPARATOR, $namespace).DIRECTORY_SEPARATOR;
 		}
-		$file .= str_replace('_', DS, $class).'.php';
+		$file .= str_replace('_', DIRECTORY_SEPARATOR, $class).'.php';
 
 		if ( ! $psr)
 		{
@@ -203,7 +203,7 @@ class Autoloader
 
 	protected static function prep_path($path)
 	{
-		return str_replace(array('/', '\\'), DS, $path);
+		return str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
 	}
 
 	protected static function init_class($class)

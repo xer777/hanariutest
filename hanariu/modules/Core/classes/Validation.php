@@ -118,7 +118,7 @@ class Validation implements \ArrayAccess {
 	{
 		if (\Hanariu::$profiling === TRUE)
 		{
-			$benchmark = \Profiler::start('\Hanariu\Validation', __FUNCTION__);
+			$benchmark = \Profiler::start('\Core\Validation', __FUNCTION__);
 		}
 
 		$data = $this->_errors = array();
@@ -185,9 +185,9 @@ class Validation implements \ArrayAccess {
 					$error_name = FALSE;
 					$passed = \call_user_func_array($rule, $params);
 				}
-				elseif (\method_exists('Valid', $rule))
+				elseif (\method_exists('\Core\Valid', $rule))
 				{
-					$method = new \ReflectionMethod('Valid', $rule);
+					$method = new \ReflectionMethod('\Core\Valid', $rule);
 					$passed = $method->invokeArgs(NULL, $params);
 				}
 				elseif (\strpos($rule, '::') === FALSE)

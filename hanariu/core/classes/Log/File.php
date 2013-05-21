@@ -36,7 +36,7 @@ class Log_File extends \Log_Writer {
 
 		if ( ! \file_exists($filename))
 		{
-			\file_put_contents($filename, Kohana::FILE_SECURITY.' ?>'.PHP_EOL);
+			\file_put_contents($filename, \Hanariu::FILE_SECURITY.' ?>'.PHP_EOL);
 			//\file_put_contents($filename, PHP_EOL);
 			\chmod($filename, 0666);
 		}

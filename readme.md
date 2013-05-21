@@ -1,8 +1,12 @@
-Hanariu - fork of Kohana Framework 3.3
+Hanariu - fork of Kohana Framework 3.3 by Riu.
 
 
 
-Whats new:
+This is fork of early Hanariu/System with thejw23 ideas and further development.
+
+
+
+Whats new in Hanariu in compare to Kohana:
 
 -   Namespaces
 

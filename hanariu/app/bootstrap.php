@@ -3,7 +3,7 @@
 require SYSPATH.'bootstrap.php';
 
 \Autoloader::add_classes(array(
-	'Core_Exception'             => __DIR__.'/classes/Core/Exception.php', //if you want exceptions based on View
+	'Core_Exception'             => __DIR__.DIRECTORY_SEPARATOR.'classes'.DIRECTORY_SEPARATOR.'Core'.DIRECTORY_SEPARATOR.'Exception.php', //if you want exceptions based on View
 ));
 
 Autoloader::register();
