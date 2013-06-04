@@ -11,7 +11,7 @@ class Profiler {
 
 		$token = 'kp/'.\base_convert($counter++, 10, 32);
 
-		Profiler::$_marks[$token] = array
+		static::$_marks[$token] = array
 		(
 			'group' => \strtolower($group),
 			'name'  => (string) $name,
@@ -26,20 +26,20 @@ class Profiler {
 
 	public static function stop($token)
 	{
-		\Profiler::$_marks[$token]['stop_time']   = \microtime(TRUE);
-		\Profiler::$_marks[$token]['stop_memory'] = \memory_get_usage();
+		static::$_marks[$token]['stop_time']   = \microtime(TRUE);
+		static::$_marks[$token]['stop_memory'] = \memory_get_usage();
 	}
 
 	public static function delete($token)
 	{
-		unset(\Profiler::$_marks[$token]);
+		unset(static::$_marks[$token]);
 	}
 
 	public static function groups()
 	{
 		$groups = array();
 
-		foreach (\Profiler::$_marks as $token => $mark)
+		foreach (static::$_marks as $token => $mark)
 		{
 			$groups[$mark['group']][$mark['name']][] = $token;
 		}
@@ -59,7 +59,7 @@ class Profiler {
 
 		foreach ($tokens as $token)
 		{
-			list($time, $memory) = \Profiler::total($token);
+			list($time, $memory) = static::total($token);
 
 			if ($max['time'] === NULL OR $time > $max['time'])
 			{
@@ -102,8 +102,8 @@ class Profiler {
 	public static function group_stats($groups = NULL)
 	{
 		$groups = ($groups === NULL)
-			? \Profiler::groups()
-			: \array_intersect_key(\Profiler::groups(), \array_flip( (array) $groups));
+			? static::groups()
+			: \array_intersect_key(static::groups(), \array_flip( (array) $groups));
 
 		$stats = array();
 
@@ -111,7 +111,7 @@ class Profiler {
 		{
 			foreach ($names as $name => $tokens)
 			{
-				$_stats = \Profiler::stats($tokens);
+				$_stats = static::stats($tokens);
 				$stats[$group][$name] = $_stats['total'];
 			}
 		}
@@ -162,7 +162,7 @@ class Profiler {
 
 	public static function total($token)
 	{
-		$mark = \Profiler::$_marks[$token];
+		$mark = static::$_marks[$token];
 
 		if ($mark['stop_time'] === FALSE)
 		{
@@ -181,7 +181,7 @@ class Profiler {
 	{
 		$stats = \Hanariu::cache('profiler_application_stats', NULL, 3600 * 24);
 
-		if ( ! \is_array($stats) OR $stats['count'] > \Profiler::$rollover)
+		if ( ! \is_array($stats) OR $stats['count'] > static::$rollover)
 		{
 			$stats = array(
 				'min'   => array(

@@ -26,13 +26,13 @@ class Core_Exception extends \Exception {
 
 	public function __toString()
 	{
-		return \Core_Exception::text($this);
+		return static::text($this);
 	}
 
 
 	public static function handler(\Exception $e)
 	{
-		$response = \Core_Exception::_handler($e);
+		$response = static::_handler($e);
 		echo $response->send_headers()->body();
 		exit(1);
 	}
@@ -41,8 +41,8 @@ class Core_Exception extends \Exception {
 	{
 		try
 		{
-			\Core_Exception::log($e);
-			$response = \Core_Exception::response($e);
+			static::log($e);
+			$response = static::response($e);
 
 			return $response;
 		}
@@ -50,7 +50,7 @@ class Core_Exception extends \Exception {
 		{
 			\ob_get_level() AND \ob_clean();
 			\header('Content-Type: text/plain; charset='.\Hanariu::$charset, TRUE, 500);
-			echo \Core_Exception::text($e);
+			echo static::text($e);
 			exit(1);
 		}
 	}
@@ -59,7 +59,7 @@ class Core_Exception extends \Exception {
 	{
 		if (\is_object(\Hanariu::$log))
 		{
-			$error = \Core_Exception::text($e);
+			$error = static::text($e);
 			\Hanariu::$log->add($level, $error, NULL, array('exception' => $e));
 			\Hanariu::$log->write();
 		}
@@ -115,9 +115,9 @@ class Core_Exception extends \Exception {
 					}
 				}
 				
-				if (isset(\Core_Exception::$php_errors[$code]))
+				if (isset(static::$php_errors[$code]))
 				{
-					$code = \Core_Exception::$php_errors[$code];
+					$code = static::$php_errors[$code];
 				}
 			}
 
@@ -138,7 +138,7 @@ class Core_Exception extends \Exception {
 
 			$response = \Response::factory();
 			$response->status(($e instanceof \HTTP_Exception) ? $e->getCode() : 500);
-			$response->headers('Content-Type', \Core_Exception::$error_view_content_type.'; charset='.\Hanariu::$charset);
+			$response->headers('Content-Type', static::$error_view_content_type.'; charset='.\Hanariu::$charset);
 			
 				$response->body($error);				
 		}
@@ -147,7 +147,7 @@ class Core_Exception extends \Exception {
 			$response = \Response::factory();
 			$response->status(500);
 			$response->headers('Content-Type', 'text/plain');
-			$response->body(\Core_Exception::text($e));
+			$response->body(static::text($e));
 		}
 
 		return $response;

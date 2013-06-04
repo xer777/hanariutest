@@ -28,7 +28,7 @@ abstract class Request_Client {
 	public function execute(\Request $request)
 	{
 		if ($this->callback_depth() > $this->max_callback_depth())
-			throw new Client\Recursion\Exception(
+			throw new \Request_Client_Recursion_Exception(
 					"Could not execute request to :uri - too many recursions after :depth requests",
 					array(
 						':uri' => $request->uri(),

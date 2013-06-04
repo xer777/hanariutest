@@ -24,7 +24,7 @@ class Arr {
 
 	public static function path($array, $path, $default = NULL, $delimiter = NULL)
 	{
-		if ( ! \Arr::is_array($array))
+		if ( ! static::is_array($array))
 		{
 			return $default;
 		}
@@ -43,7 +43,7 @@ class Arr {
 			if ($delimiter === NULL)
 			{
 				// Use the default delimiter
-				$delimiter = Arr::$delimiter;
+				$delimiter = static::$delimiter;
 			}
 
 			$path = \ltrim($path, "{$delimiter} ");
@@ -64,7 +64,7 @@ class Arr {
 			{
 				if ($keys)
 				{
-					if (\Arr::is_array($array[$key]))
+					if (static::is_array($array[$key]))
 					{
 						$array = $array[$key];
 					}
@@ -84,7 +84,7 @@ class Arr {
 				$values = array();
 				foreach ($array as $arr)
 				{
-					if ($value = \Arr::path($arr, \implode('.', $keys)))
+					if ($value = static::path($arr, \implode('.', $keys)))
 					{
 						$values[] = $value;
 					}
@@ -112,7 +112,7 @@ class Arr {
 	{
 		if ( ! $delimiter)
 		{
-			$delimiter = \Arr::$delimiter;
+			$delimiter = static::$delimiter;
 		}
 
 		$keys = \explode($delimiter, $path);
@@ -161,7 +161,7 @@ class Arr {
 		$found = array();
 		foreach ($paths as $path)
 		{
-			\Arr::set_path($found, $path, \Arr::path($array, $path, $default));
+			static::set_path($found, $path, static::path($array, $path, $default));
 		}
 
 		return $found;
@@ -197,7 +197,7 @@ class Arr {
 		{
 			if (\is_array($val))
 			{
-				$array[$key] = \Arr::map($callbacks, $array[$key]);
+				$array[$key] = static::map($callbacks, $array[$key]);
 			}
 			elseif ( ! \is_array($keys) OR \in_array($key, $keys))
 			{
@@ -220,7 +220,7 @@ class Arr {
 
 	public static function merge($array1, $array2)
 	{
-		if (\Arr::is_assoc($array2))
+		if (static::is_assoc($array2))
 		{
 			foreach ($array2 as $key => $value)
 			{
@@ -229,7 +229,7 @@ class Arr {
 					AND \is_array($array1[$key])
 				)
 				{
-					$array1[$key] = Arr::merge($array1[$key], $value);
+					$array1[$key] = static::merge($array1[$key], $value);
 				}
 				else
 				{
@@ -252,7 +252,7 @@ class Arr {
 		{
 			foreach (\array_slice(\func_get_args(), 2) as $array2)
 			{
-				if (\Arr::is_assoc($array2))
+				if (static::is_assoc($array2))
 				{
 					foreach ($array2 as $key => $value)
 					{
@@ -261,7 +261,7 @@ class Arr {
 							AND \is_array($array1[$key])
 						)
 						{
-							$array1[$key] = \Arr::merge($array1[$key], $value);
+							$array1[$key] = static::merge($array1[$key], $value);
 						}
 						else
 						{
@@ -336,14 +336,14 @@ class Arr {
 
 	public static function flatten($array)
 	{
-		$is_assoc = \Arr::is_assoc($array);
+		$is_assoc = static::is_assoc($array);
 
 		$flat = array();
 		foreach ($array as $key => $value)
 		{
 			if (\is_array($value))
 			{
-				$flat = \array_merge($flat, Arr::flatten($value));
+				$flat = \array_merge($flat, static::flatten($value));
 			}
 			else
 			{

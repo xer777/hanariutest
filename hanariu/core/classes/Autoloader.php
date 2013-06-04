@@ -182,7 +182,7 @@ class Autoloader
 		static::$auto_initialize = null;
 	}
 
-	protected static function class_to_path($class, $psr = false)
+	protected static function class_to_path($class, $psr = TRUE)
 	{
 		$file  = '';
 		if ($last_ns_pos = strripos($class, '\\'))

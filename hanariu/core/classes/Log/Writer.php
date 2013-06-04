@@ -28,7 +28,7 @@ abstract class Log_Writer {
 
 	public function format_message(array $message, $format = "time --- level: body in file:line")
 	{
-		$message['time'] = \Utils::formatted_time('@'.$message['time'], \Log_Writer::$timestamp, \Log_Writer::$timezone, TRUE);
+		$message['time'] = \Utils::formatted_time('@'.$message['time'], static::$timestamp, static::$timezone, TRUE);
 		$message['level'] = $this->_log_levels[$message['level']];
 
 		$string = strtr($format, $message);
@@ -37,7 +37,7 @@ abstract class Log_Writer {
 		{
 			// Re-use as much as possible, just resetting the body to the trace
 			$message['body'] = $message['additional']['exception']->getTraceAsString();
-			$message['level'] = $this->_log_levels[\Log_Writer::$strace_level];
+			$message['level'] = $this->_log_levels[static::$strace_level];
 
 			$string .= PHP_EOL.\strtr($format, $message);
 		}

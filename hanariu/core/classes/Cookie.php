@@ -17,18 +17,18 @@ class Cookie {
 		}
 
 		$cookie = $_COOKIE[$key];
-		$split = strlen(\Cookie::salt($key, NULL));
+		$split = strlen(static::salt($key, NULL));
 
 		if (isset($cookie[$split]) AND $cookie[$split] === '~')
 		{
 			list ($hash, $value) = \explode('~', $cookie, 2);
 
-			if (\Cookie::salt($key, $value) === $hash)
+			if (static::salt($key, $value) === $hash)
 			{
 				return $value;
 			}
 
-			\Cookie::delete($key);
+			static::delete($key);
 		}
 
 		return $default;
@@ -38,7 +38,7 @@ class Cookie {
 	{
 		if ($expiration === NULL)
 		{
-			$expiration = \Cookie::$expiration;
+			$expiration = static::$expiration;
 		}
 
 		if ($expiration !== 0)
@@ -46,28 +46,28 @@ class Cookie {
 			$expiration += t\ime();
 		}
 
-		$value = \Cookie::salt($name, $value).'~'.$value;
+		$value = static::salt($name, $value).'~'.$value;
 
-		return \setcookie($name, $value, $expiration, \Cookie::$path, \Cookie::$domain, \Cookie::$secure, \Cookie::$httponly);
+		return \setcookie($name, $value, $expiration, static::$path, static::$domain, static::$secure, static::$httponly);
 	}
 
 
 	public static function delete($name)
 	{
 		unset($_COOKIE[$name]);
-		return \setcookie($name, NULL, -86400, \Cookie::$path, \Cookie::$domain, \Cookie::$secure, \Cookie::$httponly);
+		return \setcookie($name, NULL, -86400, static::$path, static::$domain, static::$secure, static::$httponly);
 	}
 
 	public static function salt($name, $value)
 	{
-		if ( ! Cookie::$salt)
+		if ( ! static::$salt)
 		{
 			throw new \Core_Exception('A valid cookie salt is required. Please set Cookie::$salt.');
 		}
 
 		$agent = isset($_SERVER['HTTP_USER_AGENT']) ? \strtolower($_SERVER['HTTP_USER_AGENT']) : 'unknown';
 
-		return \sha1($agent.$name.$value.\Cookie::$salt);
+		return \sha1($agent.$name.$value.static::$salt);
 	}
 
 }

@@ -2,6 +2,8 @@
 
 class HTTP_Header extends \ArrayObject {
 
+	const DEFAULT_QUALITY = 1;
+
 	public static function accept_quality(array $parts)
 	{
 		$parsed = array();
@@ -15,7 +17,7 @@ class HTTP_Header extends \ArrayObject {
 
 			if ( ! \preg_match($pattern, $value, $quality))
 			{
-				$parsed[$value] = (float) \Header::DEFAULT_QUALITY;
+				$parsed[$value] = (float) static::DEFAULT_QUALITY;
 			}
 			else
 			{
@@ -39,9 +41,9 @@ class HTTP_Header extends \ArrayObject {
 		$accepts = \explode(',', (string) $accepts);
 
 		if ($accepts === NULL)
-			return array('*' => array('*' => (float) \Header::DEFAULT_QUALITY));
+			return array('*' => array('*' => (float) static::DEFAULT_QUALITY));
 
-		$accepts = \Header::accept_quality($accepts);
+		$accepts = static::accept_quality($accepts);
 		$parsed_accept = array();
 		$keys = \array_keys($accepts);
 		foreach ($keys as $key)
@@ -60,10 +62,10 @@ class HTTP_Header extends \ArrayObject {
 	{
 		if ($charset === NULL)
 		{
-			return array('*' => (float) \Header::DEFAULT_QUALITY);
+			return array('*' => (float) static::DEFAULT_QUALITY);
 		}
 
-		return \Header::accept_quality(\explode(',', (string) $charset));
+		return static::accept_quality(\explode(',', (string) $charset));
 	}
 
 	public static function parse_encoding_header($encoding = NULL)
@@ -71,15 +73,15 @@ class HTTP_Header extends \ArrayObject {
 		// Accept everything
 		if ($encoding === NULL)
 		{
-			return array('*' => (float) \Header::DEFAULT_QUALITY);
+			return array('*' => (float) static::DEFAULT_QUALITY);
 		}
 		elseif ($encoding === '')
 		{
-			return array('identity' => (float) \Header::DEFAULT_QUALITY);
+			return array('identity' => (float) static::DEFAULT_QUALITY);
 		}
 		else
 		{
-			return \Header::accept_quality(\explode(',', (string) $encoding));
+			return static::accept_quality(\explode(',', (string) $encoding));
 		}
 	}
 
@@ -87,10 +89,10 @@ class HTTP_Header extends \ArrayObject {
 	{
 		if ($language === NULL)
 		{
-			return array('*' => array('*' => (float) \Header::DEFAULT_QUALITY));
+			return array('*' => array('*' => (float) static::DEFAULT_QUALITY));
 		}
 
-		$language = \Header::accept_quality(\explode(',', (string) $language));
+		$language = static::accept_quality(\explode(',', (string) $language));
 
 		$parsed_language = array();
 
@@ -263,7 +265,7 @@ class HTTP_Header extends \ArrayObject {
 				$accept = '*/*';
 			}
 
-			$this->_accept_content = \Header::parse_accept_header($accept);
+			$this->_accept_content = static::parse_accept_header($accept);
 		}
 
 		// If not a real mime, try and find it in config
@@ -338,11 +340,11 @@ class HTTP_Header extends \ArrayObject {
 			if ($this->offsetExists('Accept-Charset'))
 			{
 				$charset_header = \strtolower($this->offsetGet('Accept-Charset'));
-				$this->_accept_charset = \Header::parse_charset_header($charset_header);
+				$this->_accept_charset = static::parse_charset_header($charset_header);
 			}
 			else
 			{
-				$this->_accept_charset = \Header::parse_charset_header(NULL);
+				$this->_accept_charset = static::parse_charset_header(NULL);
 			}
 		}
 
@@ -396,7 +398,7 @@ class HTTP_Header extends \ArrayObject {
 				$encoding_header = NULL;
 			}
 
-			$this->_accept_encoding = \HTTP_Header::parse_encoding_header($encoding_header);
+			$this->_accept_encoding = static::parse_encoding_header($encoding_header);
 		}
 
 		// Normalize the encoding
@@ -415,7 +417,7 @@ class HTTP_Header extends \ArrayObject {
 			}
 			elseif ($encoding === 'identity')
 			{
-				return (float) \Header::DEFAULT_QUALITY;
+				return (float) static::DEFAULT_QUALITY;
 			}
 		}
 
@@ -454,7 +456,7 @@ class HTTP_Header extends \ArrayObject {
 				$language_header = NULL;
 			}
 
-			$this->_accept_language = \Header::parse_language_header($language_header);
+			$this->_accept_language = static::parse_language_header($language_header);
 		}
 
 		$language_parts = \explode('-', \strtolower($language), 2);

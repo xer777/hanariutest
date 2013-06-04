@@ -66,7 +66,7 @@ class URL {
 			$path = \preg_replace_callback('~([^/]+)~', 'URL::_rawurlencode_callback', $path);
 		}
 
-		return \URL::base($protocol, $index).$path;
+		return static::base($protocol, $index).$path;
 	}
 
 	protected static function _rawurlencode_callback($matches)

@@ -14,47 +14,47 @@ class Route {
 
 	public static function set($name, $uri = NULL, $regex = NULL)
 	{
-		return \Route::$_routes[$name] = new \Route($uri, $regex);
+		return static::$_routes[$name] = new \Route($uri, $regex);
 	}
 
 	public static function get($name)
 	{
-		if ( ! isset(\Route::$_routes[$name]))
+		if ( ! isset(static::$_routes[$name]))
 		{
 			throw new \Core_Exception('The requested route does not exist: :route',
 				array(':route' => $name));
 		}
 
-		return \Hanariu\Route::$_routes[$name];
+		return static::$_routes[$name];
 	}
 
 	public static function all()
 	{
-		return \Route::$_routes;
+		return static::$_routes;
 	}
 
 	public static function name(Route $route)
 	{
-		return \array_search($route, \Route::$_routes);
+		return \array_search($route, static::$_routes);
 	}
 
 	public static function compile($uri, array $regex = NULL)
 	{
-		$expression = \preg_replace('#'.\Route::REGEX_ESCAPE.'#', '\\\\$0', $uri);
+		$expression = \preg_replace('#'.static::REGEX_ESCAPE.'#', '\\\\$0', $uri);
 
 		if (\strpos($expression, '(') !== FALSE)
 		{
 			$expression = \str_replace(array('(', ')'), array('(?:', ')?'), $expression);
 		}
 
-		$expression = \str_replace(array('<', '>'), array('(?P<', '>'.\Route::REGEX_SEGMENT.')'), $expression);
+		$expression = \str_replace(array('<', '>'), array('(?P<', '>'.static::REGEX_SEGMENT.')'), $expression);
 
 		if ($regex)
 		{
 			$search = $replace = array();
 			foreach ($regex as $key => $value)
 			{
-				$search[]  = "<$key>".\Route::REGEX_SEGMENT;
+				$search[]  = "<$key>".static::REGEX_SEGMENT;
 				$replace[] = "<$key>$value";
 			}
 
@@ -88,7 +88,7 @@ class Route {
 			$this->_regex = $regex;
 		}
 
-		$this->_route_regex = \Route::compile($uri, $regex);
+		$this->_route_regex = static::compile($uri, $regex);
 	}
 
 	public function defaults(array $defaults = NULL)
@@ -175,7 +175,7 @@ class Route {
 
 	public function is_external()
 	{
-		return ! \in_array(\Arr::get($this->_defaults, 'host', FALSE), \Route::$localhosts);
+		return ! \in_array(\Arr::get($this->_defaults, 'host', FALSE), static::$localhosts);
 	}
 
 	public static function cache($save = FALSE, $append = FALSE)
@@ -184,7 +184,7 @@ class Route {
 		{
 			try
 			{
-				\Hanariu::cache('Route::cache()', \Route::$_routes);
+				\Hanariu::cache('Route::cache()', static::$_routes);
 			}
 			catch (\Exception $e)
 			{
@@ -200,32 +200,32 @@ class Route {
 				if ($append)
 				{
 					// Append cached routes
-					\Route::$_routes += $routes;
+					static::$_routes += $routes;
 				}
 				else
 				{
 					// Replace existing routes
-					\Route::$_routes = $routes;
+					static::$_routes = $routes;
 				}
 
 				// Routes were cached
-				return \Route::$cache = TRUE;
+				return static::$cache = TRUE;
 			}
 			else
 			{
 				// Routes were not cached
-				return \Route::$cache = FALSE;
+				return static::$cache = FALSE;
 			}
 		}
 	}
 
 	public static function url($name, array $params = NULL, $protocol = NULL)
 	{
-		$route = \Route::get($name);
+		$route = static::get($name);
 		if ($route->is_external())
-			return \Route::get($name)->uri($params);
+			return static::get($name)->uri($params);
 		else
-			return \URL::site(\Route::get($name)->uri($params), $protocol);
+			return \URL::site(static::get($name)->uri($params), $protocol);
 	}
 
 	public function uri(array $params = NULL)
@@ -240,7 +240,7 @@ class Route {
 
 			if (\strpos($this->_defaults['host'], '://') === FALSE)
 			{
-				$params['host'] = \Route::$default_protocol.$this->_defaults['host'];
+				$params['host'] = static::$default_protocol.$this->_defaults['host'];
 			}
 			else
 			{
@@ -259,7 +259,7 @@ class Route {
 			$search = $match[0];
 			$replace = \substr($match[0], 1, -1);
 
-			while (\preg_match('#'.\Route::REGEX_KEY.'#', $replace, $match))
+			while (\preg_match('#'.static::REGEX_KEY.'#', $replace, $match))
 			{
 				list($key, $param) = $match;
 
@@ -291,7 +291,7 @@ class Route {
 			$uri = \str_replace($search, $replace, $uri);
 		}
 
-		while (\preg_match('#'.\Hanariu\Route::REGEX_KEY.'#', $uri, $match))
+		while (\preg_match('#'.static::REGEX_KEY.'#', $uri, $match))
 		{
 			list($key, $param) = $match;
 
@@ -321,7 +321,7 @@ class Route {
 
 			if (\strpos($host, '://') === FALSE)
 			{
-				$host = \Route::$default_protocol.$host;
+				$host = static::$default_protocol.$host;
 			}
 
 			$uri = \rtrim($host, '/').'/'.$uri;

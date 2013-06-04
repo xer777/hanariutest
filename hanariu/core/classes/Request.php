@@ -10,7 +10,7 @@ class Request implements HTTP_Request {
 
 	public static function factory($uri = TRUE, $client_params = array(), $allow_external = TRUE, $injected_routes = array())
 	{
-		if ( ! Request::$initial)
+		if ( ! static::$initial)
 		{
 			if (isset($_SERVER['SERVER_PROTOCOL']))
 			{
@@ -27,7 +27,7 @@ class Request implements HTTP_Request {
 			}
 			else
 			{
-				$method = HTTP_Request::GET;
+				$method = \HTTP_Request::GET;
 			}
 
 			if ( ! empty($_SERVER['HTTPS']) AND \filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN))
@@ -42,7 +42,7 @@ class Request implements HTTP_Request {
 
 			if (isset($_SERVER['HTTP_USER_AGENT']))
 			{
-				\Request::$user_agent = $_SERVER['HTTP_USER_AGENT'];
+				static::$user_agent = $_SERVER['HTTP_USER_AGENT'];
 			}
 
 			if (isset($_SERVER['HTTP_X_REQUESTED_WITH']))
@@ -52,27 +52,27 @@ class Request implements HTTP_Request {
 
 			if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
 			    AND isset($_SERVER['REMOTE_ADDR'])
-			    AND \in_array($_SERVER['REMOTE_ADDR'], \Request::$trusted_proxies))
+			    AND \in_array($_SERVER['REMOTE_ADDR'], static::$trusted_proxies))
 			{
 
 				$client_ips = \explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-				\Request::$client_ip = \array_shift($client_ips);
+				static::$client_ip = \array_shift($client_ips);
 
 				unset($client_ips);
 			}
 			elseif (isset($_SERVER['HTTP_CLIENT_IP'])
 			        AND isset($_SERVER['REMOTE_ADDR'])
-			        AND \in_array($_SERVER['REMOTE_ADDR'], \Request::$trusted_proxies))
+			        AND \in_array($_SERVER['REMOTE_ADDR'], static::$trusted_proxies))
 			{
 				$client_ips = explode(',', $_SERVER['HTTP_CLIENT_IP']);
 
-				\Request::$client_ip = \array_shift($client_ips);
+				static::$client_ip = \array_shift($client_ips);
 
 				unset($client_ips);
 			}
 			elseif (isset($_SERVER['REMOTE_ADDR']))
 			{
-				\Request::$client_ip = $_SERVER['REMOTE_ADDR'];
+				static::$client_ip = $_SERVER['REMOTE_ADDR'];
 			}
 
 			if ($method !== \HTTP_Request::GET)
@@ -82,7 +82,7 @@ class Request implements HTTP_Request {
 
 			if ($uri === TRUE)
 			{
-				$uri = \Request::detect_uri();
+				$uri = static::detect_uri();
 			}
 
 			$cookies = array();
@@ -95,7 +95,7 @@ class Request implements HTTP_Request {
 				}
 			}
 
-			\Request::$initial = $request = new \Request($uri, $client_params, $allow_external, $injected_routes);
+			static::$initial = $request = new \Request($uri, $client_params, $allow_external, $injected_routes);
 
 			$request->protocol($protocol)
 				->query($_GET)
@@ -191,17 +191,17 @@ class Request implements HTTP_Request {
 
 	public static function current()
 	{
-		return \Request::$current;
+		return static::$current;
 	}
 
 	public static function initial()
 	{
-		return \Request::$initial;
+		return static::$initial;
 	}
 
 	public static function user_agent($value)
 	{
-		return \Utils::user_agent(\Request::$user_agent, $value);
+		return \Utils::user_agent(static::$user_agent, $value);
 	}
 
 	public static function accept_type($type = NULL)
@@ -210,7 +210,7 @@ class Request implements HTTP_Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = \Request::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
+			$accepts = static::_parse_accept($_SERVER['HTTP_ACCEPT'], array('*/*' => 1.0));
 		}
 
 		if (isset($type))
@@ -227,7 +227,7 @@ class Request implements HTTP_Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = \Request::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+			$accepts = static::_parse_accept($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 		}
 
 		if (isset($lang))
@@ -244,7 +244,7 @@ class Request implements HTTP_Request {
 
 		if ($accepts === NULL)
 		{
-			$accepts = \Request::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
+			$accepts = static::_parse_accept($_SERVER['HTTP_ACCEPT_ENCODING']);
 		}
 
 		if (isset($type))
@@ -258,7 +258,7 @@ class Request implements HTTP_Request {
 
 	public static function post_max_size_exceeded()
 	{
-		if (\Request::$initial->method() !== \HTTP_Request::POST)
+		if (static::$initial->method() !== \HTTP_Request::POST)
 			return FALSE;
 		$max_bytes = \Utils::bytes(\ini_get('post_max_size'));
 		return (\Arr::get($_SERVER, 'CONTENT_LENGTH') > $max_bytes);
@@ -349,7 +349,7 @@ class Request implements HTTP_Request {
 		$split_uri = \explode('?', $uri);
 		$uri = \array_shift($split_uri);
 
-		if (\Request::$initial !== NULL)
+		if (static::$initial !== NULL)
 		{
 			if ($split_uri)
 			{
@@ -525,7 +525,7 @@ class Request implements HTTP_Request {
 	{
 		if ( ! $this->_external)
 		{
-			$processed = \Request::process($this, $this->_routes);
+			$processed = static::process($this, $this->_routes);
 
 			if ($processed)
 			{
@@ -578,7 +578,7 @@ class Request implements HTTP_Request {
 
 	public function is_initial()
 	{
-		return ($this === \Request::$initial);
+		return ($this === static::$initial);
 	}
 
 	public function is_external()

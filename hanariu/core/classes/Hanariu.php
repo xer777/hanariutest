@@ -38,32 +38,32 @@ class Hanariu {
 
 	public static function init(array $settings = NULL)
 	{
-		if (\Hanariu::$_init)
+		if (static::$_init)
 		{
 			return;
 		}
 
-		\Hanariu::$_init = TRUE;
+		static::$_init = TRUE;
 
 		if (isset($settings['profile']))
 		{
-			\Hanariu::$profiling = (bool) $settings['profile'];
+			static::$profiling = (bool) $settings['profile'];
 		}
 
 		\ob_start();
 
 		if (isset($settings['errors']))
 		{
-			\Hanariu::$errors = (bool) $settings['errors'];
+			static::$errors = (bool) $settings['errors'];
 		}
 
-		if (\Hanariu::$errors === TRUE)
+		if (static::$errors === TRUE)
 		{
 			\set_exception_handler(array('\\Core_Exception', 'handler'));
 			\set_error_handler(array('\\Core_Handler', 'error_handler'));
 		}
 
-		if (\Hanariu::$environment == \Hanariu::DEVELOPMENT AND \extension_loaded('xdebug'))
+		if (static::$environment == static::DEVELOPMENT AND \extension_loaded('xdebug'))
 		{
 		    \ini_set('xdebug.collect_params', 3);
 		}
@@ -72,16 +72,16 @@ class Hanariu {
 
 		if (\ini_get('register_globals'))
 		{
-			\Hanariu::globals();
+			static::globals();
 		}
 
 		if (isset($settings['expose']))
 		{
-			\Hanariu::$expose = (bool) $settings['expose'];
+			static::$expose = (bool) $settings['expose'];
 		}
 
-		\Hanariu::$is_windows = (DIRECTORY_SEPARATOR === '\\');
-		\Hanariu::$safe_mode = (bool) \ini_get('safe_mode');
+		static::$is_windows = (DIRECTORY_SEPARATOR === '\\');
+		static::$safe_mode = (bool) \ini_get('safe_mode');
 
 		if (isset($settings['cache_dir']))
 		{
@@ -99,89 +99,89 @@ class Hanariu {
 				}
 			}
 
-			\Hanariu::$cache_dir = \realpath($settings['cache_dir']);
+			static::$cache_dir = \realpath($settings['cache_dir']);
 		}
 		else
 		{
-			\Hanariu::$cache_dir = APPPATH.'cache';
+			static::$cache_dir = APPPATH.'cache';
 		}
 
-		if ( ! is_writable(\Hanariu::$cache_dir))
+		if ( ! is_writable(static::$cache_dir))
 		{
 			throw new \Core_Exception('Directory :dir must be writable',
-				array(':dir' => \Debug::path(\Hanariu::$cache_dir)));
+				array(':dir' => \Debug::path(static::$cache_dir)));
 		}
 
 		if (isset($settings['cache_life']))
 		{
-			\Hanariu::$cache_life = (int) $settings['cache_life'];
+			static::$cache_life = (int) $settings['cache_life'];
 		}
 
 		if (isset($settings['caching']))
 		{
-			\Hanariu::$caching = (bool) $settings['caching'];
+			static::$caching = (bool) $settings['caching'];
 		}
 
-		if (\Hanariu::$caching === TRUE)
+		if (static::$caching === TRUE)
 		{
-			//\Hanariu::$_files = \Hanariu::cache('Hanariu::find_file()');
+			//static::$_files = static::cache(static::find_file()');
 		}
 
 		if (isset($settings['charset']))
 		{
-			\Hanariu::$charset = \strtolower($settings['charset']);
+			static::$charset = \strtolower($settings['charset']);
 		}
 
 		if (function_exists('mb_internal_encoding'))
 		{
-			\mb_internal_encoding(\Hanariu::$charset);
+			\mb_internal_encoding(static::$charset);
 		}
 
 		if (isset($settings['base_url']))
 		{
-			\Hanariu::$base_url = \rtrim($settings['base_url'], '/').'/';
+			static::$base_url = \rtrim($settings['base_url'], '/').'/';
 		}
 
 		if (isset($settings['index_file']))
 		{
-			\Hanariu::$index_file = \trim($settings['index_file'], '/');
+			static::$index_file = \trim($settings['index_file'], '/');
 		}
 
-		\Hanariu::$magic_quotes = (\version_compare(PHP_VERSION, '5.4') < 0 AND \get_magic_quotes_gpc());
+		static::$magic_quotes = (\version_compare(PHP_VERSION, '5.4') < 0 AND \get_magic_quotes_gpc());
 
-		$_GET    = \Hanariu::sanitize($_GET);
-		$_POST   = \Hanariu::sanitize($_POST);
-		$_COOKIE = \Hanariu::sanitize($_COOKIE);
+		$_GET    = static::sanitize($_GET);
+		$_POST   = static::sanitize($_POST);
+		$_COOKIE = static::sanitize($_COOKIE);
 
-		if ( ! \Hanariu::$log instanceof \Log)
+		if ( ! static::$log instanceof \Log)
 		{
-			\Hanariu::$log = \Log::instance();
+			static::$log = \Log::instance();
 		}
 
-		if ( ! \Hanariu::$config instanceof \Config)
+		if ( ! static::$config instanceof \Config)
 		{
-			\Hanariu::$config = new \Config;
+			static::$config = new \Config;
 		}
 	}
 
 	public static function deinit()
 	{
-		if (\Hanariu::$_init)
+		if (static::$_init)
 		{
 			//\spl_autoload_unregister(array('Hanariu', 'auto_load'));
 			\spl_autoload_unregister('Autoloader::load');
 
-			if (\Hanariu::$errors)
+			if (static::$errors)
 			{
 				\restore_error_handler();
 				\restore_exception_handler();
 			}
 
-			\Hanariu::$log = \Hanariu::$config = NULL;
-			\Hanariu::$_modules = \Hanariu::$_files = array();
-			\Hanariu::$_paths = array(APPPATH, SYSPATH);
-			\Hanariu::$_files_changed = FALSE;
-			\Hanariu::$_init = FALSE;
+			static::$log = static::$config = NULL;
+			static::$_modules = static::$_files = array();
+			static::$_paths = array(APPPATH, SYSPATH);
+			static::$_files_changed = FALSE;
+			static::$_init = FALSE;
 		}
 	}
 
@@ -218,12 +218,12 @@ class Hanariu {
 		{
 			foreach ($value as $key => $val)
 			{
-				$value[$key] = \Hanariu::sanitize($val);
+				$value[$key] = static::sanitize($val);
 			}
 		}
 		elseif (\is_string($value))
 		{
-			if (\Hanariu::$magic_quotes === TRUE)
+			if (static::$magic_quotes === TRUE)
 			{
 				$value = \stripslashes($value);
 			}
@@ -254,19 +254,19 @@ class Hanariu {
 
 		$path = $dir.DIRECTORY_SEPARATOR.$file.$ext;
 
-		if (\Hanariu::$caching === TRUE AND isset(\Hanariu::$_files[$path.($array ? '_array' : '_path')]))
+		if (static::$caching === TRUE AND isset(static::$_files[$path.($array ? '_array' : '_path')]))
 		{
-			return \Hanariu::$_files[$path.($array ? '_array' : '_path')];
+			return static::$_files[$path.($array ? '_array' : '_path')];
 		}
 
-		if (\Hanariu::$profiling === TRUE AND \class_exists('\Hanariu\Profiler', FALSE))
+		if (static::$profiling === TRUE AND \class_exists('\Hanariu\Profiler', FALSE))
 		{
 			$benchmark = \Profiler::start('Hanariu', __FUNCTION__);
 		}
 
 		if ($array OR $dir === 'config' OR $dir === 'i18n' OR $dir === 'messages')
 		{
-			$paths = \array_reverse(\Hanariu::$_paths);
+			$paths = \array_reverse(static::$_paths);
 
 			$found = array();
 
@@ -282,7 +282,7 @@ class Hanariu {
 		{
 			$found = FALSE;
 
-			foreach (\Hanariu::$_paths as $dir)
+			foreach (static::$_paths as $dir)
 			{
 				if (\is_file($dir.$path))
 				{
@@ -293,11 +293,11 @@ class Hanariu {
 			}
 		}
 
-		if (\Hanariu::$caching === TRUE)
+		if (static::$caching === TRUE)
 		{
-			\Hanariu::$_files[$path.($array ? '_array' : '_path')] = $found;
+			static::$_files[$path.($array ? '_array' : '_path')] = $found;
 
-			\Hanariu::$_files_changed = TRUE;
+			static::$_files_changed = TRUE;
 		}
 
 		if (isset($benchmark))
@@ -313,7 +313,7 @@ class Hanariu {
 		if ($modules === NULL)
 		{
 			// Not changing modules, just return the current set
-			return \Hanariu::$_modules;
+			return static::$_modules;
 		}
 
 		// Start a new list of include paths, APPPATH first
@@ -340,12 +340,12 @@ class Hanariu {
 		$paths[] = SYSPATH;
 
 		// Set the new include paths
-		\Hanariu::$_paths = $paths;
+		static::$_paths = $paths;
 
 		// Set the current module list
-		\Hanariu::$_modules = $modules;
+		static::$_modules = $modules;
 
-		foreach (\Hanariu::$_modules as $path)
+		foreach (static::$_modules as $path)
 		{
 			//\Finder::instance()->add_path($path, 1);
 			$init = $path.'bootstrap'.EXT;
@@ -357,12 +357,12 @@ class Hanariu {
 			}
 		}
 
-		return \Hanariu::$_modules;
+		return static::$_modules;
 	}
 
 	public static function include_paths()
 	{
-		return \Hanariu::$_paths;
+		return static::$_paths;
 	}
 
 	public static function load($file)
@@ -376,12 +376,12 @@ class Hanariu {
 		$file = \sha1($name).'.txt';
 
 		// Cache directories are split by keys to prevent filesystem overload
-		$dir = \Hanariu::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
+		$dir = static::$cache_dir.DIRECTORY_SEPARATOR.$file[0].$file[1].DIRECTORY_SEPARATOR;
 
 		if ($lifetime === NULL)
 		{
 			// Use the default lifetime
-			$lifetime = \Hanariu::$cache_life;
+			$lifetime = static::$cache_life;
 		}
 
 		if ($data === NULL)
@@ -445,7 +445,7 @@ class Hanariu {
 
 	public static function version()
 	{
-		return 'Hanariu Framework '.\Hanariu::VERSION.' ('.\Hanariu::CODENAME.')';
+		return 'Hanariu Framework '.static::VERSION.' ('.static::CODENAME.')';
 	}
 
 }

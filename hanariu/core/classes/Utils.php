@@ -51,7 +51,7 @@ class Utils {
 	public static function bytes($size)
 	{
 		$size = \trim( (string) $size);
-		$accepted = \implode('|', \array_keys(\Utils::$byte_units));
+		$accepted = \implode('|', \array_keys(static::$byte_units));
 		$pattern = '/^([0-9]+(?:\.[0-9]+)?)('.$accepted.')?$/Di';
 		if ( ! \preg_match($pattern, $size, $matches))
 			throw new \Exception('The byte unit size, ":size", is improperly formatted.', array(
@@ -60,7 +60,7 @@ class Utils {
 
 		$size = (float) $matches[1];
 		$unit = \Arr::get($matches, 2, 'B');
-		$bytes = $size * \pow(2, \Utils::$byte_units[$unit]);
+		$bytes = $size * \pow(2, static::$byte_units[$unit]);
 		return $bytes;
 	}
 
@@ -73,8 +73,8 @@ class Utils {
 
 	public static function formatted_time($datetime_str = 'now', $timestamp_format = NULL, $timezone = NULL)
 	{
-		$timestamp_format = ($timestamp_format == NULL) ? \Utils::$timestamp_format : $timestamp_format;
-		$timezone         = ($timezone === NULL) ? \Utils::$timezone : $timezone;
+		$timestamp_format = ($timestamp_format == NULL) ? static::$timestamp_format : $timestamp_format;
+		$timezone         = ($timezone === NULL) ? static::$timezone : $timezone;
 
 		$tz   = new \DateTimeZone($timezone ? $timezone : \date_default_timezone_get());
 		$time = new \DateTime($datetime_str, $tz);
@@ -104,14 +104,14 @@ class Utils {
 		{
 			foreach ($var as $key => $val)
 			{
-				$var[\Utils::clean($key)] = \Utils::clean($val);
+				$var[static::clean($key)] = static::clean($val);
 			}
 		}
 		elseif (\is_string($var) AND $var !== '')
 		{
-			$var = \Utils::strip_ascii_ctrl($var);
+			$var = static::strip_ascii_ctrl($var);
 
-			if ( ! \Utils::is_ascii($var))
+			if ( ! static::is_ascii($var))
 			{
 				$error_reporting = \error_reporting(~E_NOTICE);
 				$var = \iconv($charset, $charset.'//IGNORE', $var);
@@ -139,10 +139,10 @@ class Utils {
 
 	public static function strlen($str)
 	{
-		if (\Utils::$server_utf8)
+		if (static::$server_utf8)
 			return \mb_strlen($str, \Hanariu::$charset);
 
-		if (\Utils::is_ascii($str))
+		if (static::is_ascii($str))
 			return \strlen($str);
 
 		return \strlen(\utf8_decode($str));
@@ -156,7 +156,7 @@ class Utils {
 			$data = array();
 			foreach ($value as $part)
 			{
-				$data[$part] = \Utils::user_agent($agent, $part);
+				$data[$part] = static::user_agent($agent, $part);
 			}
 
 			return $data;

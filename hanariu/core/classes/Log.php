@@ -16,13 +16,13 @@ class Log {
 
 	public static function instance()
 	{
-		if (\Log::$_instance === NULL)
+		if (static::$_instance === NULL)
 		{
-			\Log::$_instance = new \Log;
-			\register_shutdown_function(array(\Log::$_instance, 'write'));
+			static::$_instance = new \Log;
+			\register_shutdown_function(array(static::$_instance, 'write'));
 		}
 
-		return \Log::$_instance;
+		return static::$_instance;
 	}
 
 	protected $_messages = array();
@@ -96,7 +96,7 @@ class Log {
 			'additional' => $additional,
 		);
 
-		if (\Log::$write_on_add)
+		if (static::$write_on_add)
 		{
 			$this->write();
 		}
